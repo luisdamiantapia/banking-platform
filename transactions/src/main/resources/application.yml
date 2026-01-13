@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ms-transactions
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_transactions
+    username: admin
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: transactions-group # Importante: Group ID único
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        # CAMBIO 2: Definimos quién es el verdadero deserializador delegado
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+
+        # CAMBIO 3: Configuración del JsonDeserializer
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+
+        # CAMBIO 4 (LA SOLUCIÓN): Le decimos explícitamente a qué clase convertir el JSON
+        spring.json.value.default.type: com.banking.platform.transactions.events.AccountCreatedEvent
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
