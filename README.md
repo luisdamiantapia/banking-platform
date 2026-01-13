@@ -130,7 +130,7 @@ Si revisas los logs de `ms-accounts`, verás que recibió el evento de transacci
 
 ---
 
-## 📝 Notas de Diseño (Senior Engineering)
+## 📝 Notas de Diseño
 
 *   **Idempotencia:** Los consumidores están diseñados para procesar eventos de forma idempotente (el uso de IDs fijos en proyecciones ayuda a esto).
 *   **Consistencia Eventual:** El saldo en `ms-transactions` es "eventualmente consistente" con `ms-accounts`. Para mitigar riesgos de doble gasto en alta concurrencia, `ms-transactions` aplica una actualización optimista local antes de emitir el evento.
